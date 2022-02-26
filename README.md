@@ -10,12 +10,24 @@ It injects the following interceptor
 
 ## Installation
 
+```
+    go get -u gitlab.com/nishanth.shetty.netbook/interceptors@v0.0.2
+```
+
+You may not be able to access the repo with netbook-devs path in GOPRIVATE,  update it as follows
+
+```
+export GOPRIVATE=gitlab.com/*
+```
+
+> can update it in your profile settings (.bashrc, .zshrc)
+
 ## Usage
 
 Register interceptors when setting up gRPC server in application
 
 ```
-		baseServer := grpc.NewServer(  middleware.GetInterceptors(appName,sugar))
+baseServer := grpc.NewServer(  middleware.GetInterceptors(appName,sugar))
 ```
 
 ## Support
@@ -27,9 +39,10 @@ Tell people where they can go to for help. It can be any combination of an issue
 
 ## Authors and acknowledgment
 
-[ ] Nishanth Shetty <nishanthspshetty@gmail.com>
+* Nishanth Shetty <nishanthspshetty@gmail.com>
 
 ## License
+
 MIT ?
 
 ## Project status
