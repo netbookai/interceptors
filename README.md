@@ -11,7 +11,7 @@ It injects the following interceptor
 ## Installation
 
 ```
-    go get -u gitlab.com/nishanth.shetty.netbook/interceptors@v0.0.2
+    go get -u github.com/netbook-ai/interceptors@v0.0.1
 ```
 
 You may not be able to access the repo with netbook-devs path in GOPRIVATE,  update it as follows

@@ -1,4 +1,4 @@
-module gitlab.com/nishanth.shetty.netbook/interceptors
+module github.com/netbook-ai/interceptors
 
 go 1.17
 

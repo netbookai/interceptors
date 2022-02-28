@@ -1,7 +1,5 @@
 package interceptors
 
-// Interceptors
-
 import (
 	"context"
 	"runtime/debug"
