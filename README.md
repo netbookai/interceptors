@@ -11,7 +11,7 @@ It injects the following interceptor
 ## Installation
 
 ```
-    go get -u github.com/netbook-ai/interceptors@v0.0.1
+    go get -u github.com/netbook-ai/interceptors@v0.1.0
 ```
 
 You may not be able to access the repo with netbook-devs path in GOPRIVATE,  update it as follows
@@ -26,12 +26,37 @@ export GOPRIVATE=gitlab.com/*
 
 Register interceptors when setting up gRPC server in application
 
+Using default interceptors
+
 ```
-baseServer := grpc.NewServer(  middleware.GetInterceptors(appName,sugar))
+//get Interceptor interface
+interceptor := interceptors.NewInterceptor("spawnerservice", logger)
+
+//Calling Get will return ServerOptions
+baseServer := grpc.NewServer(interceptor.Get())
+```
+
+Using user defined interceptors
+```
+func InstrumentationInterceptor() grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+		IncRequest(getMethod(info))
+		return handler(ctx, req)
+	}
+}
+
+//get Interceptor interface
+interceptor := interceptors.NewInterceptor(
+							"spawnerservice",
+ 							logger,
+                  			interceptors.WithInterceptor(InstrumentationInterceptor()))
+
+//Calling Get will return ServerOptions, which is passed to NewServer
+baseServer := grpc.NewServer(interceptor.Get())
 ```
 
 ## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Raise a issue, we will get back to you.
 
 ## Roadmap
 
@@ -43,6 +68,8 @@ Tell people where they can go to for help. It can be any combination of an issue
 
 ## License
 
-MIT ?
+
 
 ## Project status
+    
+    GNU GENERAL PUBLIC LICENSE
