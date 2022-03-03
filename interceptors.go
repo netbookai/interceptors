@@ -13,14 +13,42 @@ func getMethod(info *grpc.UnaryServerInfo) string {
 	return splits[len(splits)-1]
 }
 
-//GetInterceptors return the unary interceptos, with injected
-// kit Interceptor - inject method name to the context
-// loggingInterceptor - log request and response data, duration of the call
-// recoveryInterceptor - recover from any API panics gracefully and logs error
-func GetInterceptors(service string, logger *zap.SugaredLogger) grpc.ServerOption {
+type Interceptor interface {
+	Get() grpc.ServerOption
+}
+
+type interceptor struct {
+	options []grpc.UnaryServerInterceptor
+}
+
+type InterceptorOption func(in *interceptor)
+
+func NewInterceptor(service string, logger *zap.SugaredLogger, options ...InterceptorOption) Interceptor {
+
+	in := &interceptor{}
+
+	//apply default interceptors
+	WithInterecptor(kitgrpc.Interceptor)(in)
+	WithInterecptor(loggingInterceptor(service, logger))(in)
+	WithInterecptor(recoveryInterceptor(service, logger))(in)
+
+	for _, option := range options {
+		option(in)
+	}
+	return in
+}
+
+func WithInterecptor(userInterceptor grpc.UnaryServerInterceptor) InterceptorOption {
+
+	return func(in *interceptor) {
+		in.options = append(in.options, userInterceptor)
+	}
+
+}
+
+//Get return the unary interceptos composing of all default and user options
+func (in *interceptor) Get() grpc.ServerOption {
 	return grpc.ChainUnaryInterceptor(
-		kitgrpc.Interceptor,
-		loggingInterceptor(service, logger),
-		recoveryInterceptor(service, logger),
+		in.options...,
 	)
 }
