@@ -29,8 +29,8 @@ func NewInterceptor(service string, logger *zap.SugaredLogger, options ...Interc
 
 	//apply default interceptors
 	WithInterecptor(kitgrpc.Interceptor)(in)
-	WithInterecptor(loggingInterceptor(service, logger))(in)
-	WithInterecptor(recoveryInterceptor(service, logger))(in)
+	WithInterecptor(loggingInterceptor(logger))(in)
+	WithInterecptor(recoveryInterceptor(logger))(in)
 
 	for _, option := range options {
 		option(in)
