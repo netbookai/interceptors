@@ -1,5 +1,7 @@
 # Interceptors
 
+<a href="https://pkg.go.dev/github.com/netbook-ai/interceptors"><img src="https://pkg.go.dev/badge/github.com/netbook-ai/interceptors.svg" alt="Go Reference"></a>
+
 gRPC interceptors used in netbook services
 
 It injects the following interceptor
