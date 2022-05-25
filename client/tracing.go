@@ -12,7 +12,7 @@ import (
 
 const TRACE_ID = "trace-id"
 
-func TracingInterceptor(logger log.Logger) grpc.UnaryClientInterceptor {
+func tracingInterceptor(logger log.Logger) grpc.UnaryClientInterceptor {
 
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 
@@ -30,4 +30,8 @@ func TracingInterceptor(logger log.Logger) grpc.UnaryClientInterceptor {
 func generateFallBackTraceId() string {
 	id, _ := uuid.NewRandom()
 	return fmt.Sprintf("fallback-%s", id.String())
+}
+
+func WithTracingInterceptor(logger log.Logger) grpc.DialOption {
+	return grpc.WithUnaryInterceptor(tracingInterceptor(logger))
 }
