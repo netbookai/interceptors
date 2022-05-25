@@ -2,6 +2,7 @@ package interceptors
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/netbookai/log"
@@ -17,9 +18,8 @@ func TracingInterceptor(logger log.Logger) grpc.UnaryClientInterceptor {
 
 		traceid, ok := ctx.Value(TRACE_ID).(string)
 		if !ok {
-			logger.Warn(ctx, "invalid traceid found in context", "traceid", ctx.Value(TRACE_ID))
-			traceid = generateTraceId()
-			logger.Info(ctx, "generated new trace id", "traceid", traceid)
+			logger.Warn(ctx, "invalid traceid found in context. generating fallback id", "traceid", ctx.Value(TRACE_ID))
+			traceid = generateFallBackTraceId()
 		}
 
 		ctx = metadata.AppendToOutgoingContext(ctx, TRACE_ID, traceid)
@@ -27,7 +27,7 @@ func TracingInterceptor(logger log.Logger) grpc.UnaryClientInterceptor {
 	}
 }
 
-func generateTraceId() string {
+func generateFallBackTraceId() string {
 	id, _ := uuid.NewRandom()
-	return id.String()
+	return fmt.Sprintf("fallback-%s", id.String())
 }
