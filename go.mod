@@ -5,6 +5,8 @@ go 1.17
 require (
 	github.com/go-kit/kit v0.11.0
 	github.com/gogo/status v1.1.0
+	github.com/google/uuid v1.1.2
+	github.com/netbookai/log v0.4.0
 	go.uber.org/zap v1.19.1
 	google.golang.org/grpc v1.44.0
 )
