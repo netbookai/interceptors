@@ -5,12 +5,12 @@ import (
 	"runtime/debug"
 
 	"github.com/gogo/status"
-	"go.uber.org/zap"
+	"github.com/netbookai/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )
 
-func recoveryInterceptor(logger *zap.SugaredLogger) grpc.UnaryServerInterceptor {
+func recoveryInterceptor(logger log.Logger) grpc.UnaryServerInterceptor {
 
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (_ interface{}, err error) {
 		panicked := true
@@ -19,7 +19,7 @@ func recoveryInterceptor(logger *zap.SugaredLogger) grpc.UnaryServerInterceptor 
 			if r := recover(); r != nil || panicked {
 				//log error details and stack trace
 				methodName := getMethod(info)
-				logger.Errorw("failed to handle the request [PANIC]", "method", methodName, "error", err, "stacktrace", string(debug.Stack()))
+				logger.Error(ctx, "failed to handle the request [PANIC]", "method", methodName, "error", err, "stacktrace", string(debug.Stack()))
 				err = status.Errorf(codes.Internal, "%v in call to method '%s'", r, methodName)
 			}
 		}()
