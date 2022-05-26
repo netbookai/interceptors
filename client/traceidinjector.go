@@ -1,4 +1,4 @@
-package interceptors
+package client
 
 import (
 	"context"
@@ -12,7 +12,15 @@ import (
 
 const TRACE_ID = "trace-id"
 
-func tracingInterceptor(logger log.Logger) grpc.UnaryClientInterceptor {
+func generateFallBackTraceId() string {
+	id, _ := uuid.NewRandom()
+	return fmt.Sprintf("fallback-%s", id)
+}
+
+//TraceIdInjectInterceptor inject trace id present in the request context to grpc request metadata,
+// Set the trace id in content using context.WithValue("trace-id", your_awesome_trace_id)
+//
+func TraceIdInjectInterceptor(logger log.Logger) grpc.UnaryClientInterceptor {
 
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 
@@ -25,13 +33,4 @@ func tracingInterceptor(logger log.Logger) grpc.UnaryClientInterceptor {
 		ctx = metadata.AppendToOutgoingContext(ctx, TRACE_ID, traceid)
 		return invoker(ctx, method, req, reply, cc, opts...)
 	}
-}
-
-func generateFallBackTraceId() string {
-	id, _ := uuid.NewRandom()
-	return fmt.Sprintf("fallback-%s", id.String())
-}
-
-func WithTracingInterceptor(logger log.Logger) grpc.DialOption {
-	return grpc.WithUnaryInterceptor(tracingInterceptor(logger))
 }
