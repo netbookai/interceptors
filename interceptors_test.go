@@ -4,7 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"go.uber.org/zap"
+	"github.com/netbookai/log"
+	"github.com/netbookai/log/loggers/zap"
 	"google.golang.org/grpc"
 )
 
@@ -33,7 +34,8 @@ func Test_GetInterceptors(t *testing.T) {
 	//as there is no build, we can find any compilation issue here
 
 	//with default options
-	ints := NewInterceptor("my-service", zap.L().Sugar())
+	logger := log.NewLogger(zap.NewLogger())
+	ints := NewInterceptor("my-service", logger)
 
 	serverOptions := ints.Get()
 
@@ -43,7 +45,7 @@ func Test_GetInterceptors(t *testing.T) {
 	}
 
 	//with default options
-	ints = NewInterceptor("my-service", zap.L().Sugar(), WithInterecptor(customInterceptor()))
+	ints = NewInterceptor("my-service", logger, WithInterecptor(customInterceptor()))
 
 	serverOptions = ints.Get()
 
