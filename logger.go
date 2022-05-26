@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"go.uber.org/zap"
+	"github.com/netbookai/log"
 	"google.golang.org/grpc"
 )
 
-func loggingInterceptor(logger *zap.SugaredLogger) grpc.UnaryServerInterceptor {
+func loggingInterceptor(logger log.Logger) grpc.UnaryServerInterceptor {
 
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (_ interface{}, err error) {
 		// log request and response data
@@ -18,9 +18,9 @@ func loggingInterceptor(logger *zap.SugaredLogger) grpc.UnaryServerInterceptor {
 		request := fmt.Sprintf("%+v", req)
 		method := getMethod(info)
 
-		logger.Debugw(method, "method", method, "request", request)
+		logger.Debug(ctx, method, "method", method, "request", request)
 		resp, err := handler(ctx, req)
-		logger.Infow(method, "method", method, "request", request, "response", resp, "error", err, "took", time.Since(begin))
+		logger.Info(ctx, method, "method", method, "request", request, "response", resp, "error", err, "took", time.Since(begin))
 		return resp, err
 	}
 }

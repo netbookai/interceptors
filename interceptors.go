@@ -3,8 +3,9 @@ package interceptors
 import (
 	"strings"
 
+	"github.com/netbookai/log"
+
 	kitgrpc "github.com/go-kit/kit/transport/grpc"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
@@ -23,7 +24,7 @@ type interceptor struct {
 
 type InterceptorOption func(in *interceptor)
 
-func NewInterceptor(service string, logger *zap.SugaredLogger, options ...InterceptorOption) Interceptor {
+func NewInterceptor(service string, logger log.Logger, options ...InterceptorOption) Interceptor {
 
 	in := &interceptor{}
 
