@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func loggingInterceptor(logger log.Logger) grpc.UnaryServerInterceptor {
+func loggingInterceptor(in *interceptor, logger log.Logger) grpc.UnaryServerInterceptor {
 
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (_ interface{}, err error) {
 		// log request and response data
@@ -18,9 +18,21 @@ func loggingInterceptor(logger log.Logger) grpc.UnaryServerInterceptor {
 		request := fmt.Sprintf("%+v", req)
 		method := getMethod(info)
 
-		logger.Debug(ctx, method, "method", method, "request", request)
+		skip := in.skipLog(method)
+		args := []interface{}{method, "method", method}
+		if !skip {
+			args = append(args, []interface{}{"request", request})
+		}
+
+		logger.Debug(ctx, args...)
 		resp, err := handler(ctx, req)
-		logger.Info(ctx, method, "method", method, "request", request, "response", resp, "error", err, "took", time.Since(begin))
+
+		args = []interface{}{method, "method", method, "error", err, "took", time.Since(begin)}
+
+		if !skip {
+			args = append(args, []interface{}{"request", request, request, "response", resp})
+		}
+		logger.Info(ctx, args...)
 		return resp, err
 	}
 }

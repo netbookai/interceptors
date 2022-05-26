@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-func recoveryInterceptor(logger log.Logger) grpc.UnaryServerInterceptor {
+func recoveryInterceptor(in *interceptor, logger log.Logger) grpc.UnaryServerInterceptor {
 
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (_ interface{}, err error) {
 		panicked := true
