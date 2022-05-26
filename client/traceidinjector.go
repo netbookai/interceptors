@@ -1,4 +1,4 @@
-package interceptors
+package client
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 
 const TRACE_ID = "trace-id"
 
-func tracingInterceptor(logger log.Logger) grpc.UnaryClientInterceptor {
+func traceIdInjectInterceptor(logger log.Logger) grpc.UnaryClientInterceptor {
 
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 
@@ -33,5 +33,5 @@ func generateFallBackTraceId() string {
 }
 
 func WithTracingInterceptor(logger log.Logger) grpc.DialOption {
-	return grpc.WithUnaryInterceptor(tracingInterceptor(logger))
+	return grpc.WithUnaryInterceptor(traceIdInjectInterceptor(logger))
 }

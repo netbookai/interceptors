@@ -40,11 +40,9 @@ func NewInterceptor(service string, logger log.Logger, options ...InterceptorOpt
 }
 
 func WithInterecptor(userInterceptor grpc.UnaryServerInterceptor) InterceptorOption {
-
 	return func(in *interceptor) {
 		in.options = append(in.options, userInterceptor)
 	}
-
 }
 
 //Get return the unary interceptos composing of all default and user options
