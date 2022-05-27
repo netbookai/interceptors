@@ -54,3 +54,16 @@ func Test_GetInterceptors(t *testing.T) {
 		t.Fatalf("GetInterceptors :  type missmatch, expected 'grpc.ServerOption', got '%s'", got)
 	}
 }
+
+func Test_skipLog(t *testing.T) {
+	in := &interceptor{}
+	WithSkipMethod([]string{"password"})(in)
+
+	if !in.skipLog("password") {
+		t.Fatalf("skipLog: expected : true, Got : false")
+	}
+
+	if in.skipLog("ping") {
+		t.Fatalf("skipLog: expected : false, Got :true")
+	}
+}

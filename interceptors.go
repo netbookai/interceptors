@@ -19,25 +19,21 @@ type Interceptor interface {
 }
 
 type interceptor struct {
-	options []grpc.UnaryServerInterceptor
+	options     []grpc.UnaryServerInterceptor
+	skipMethods []string
+}
+
+func (i *interceptor) skipLog(method string) bool {
+	//quick good lookup function
+	for _, m := range i.skipMethods {
+		if m == method {
+			return true
+		}
+	}
+	return false
 }
 
 type InterceptorOption func(in *interceptor)
-
-func NewInterceptor(service string, logger log.Logger, options ...InterceptorOption) Interceptor {
-
-	in := &interceptor{}
-
-	//apply default interceptors
-	WithInterecptor(kitgrpc.Interceptor)(in)
-	WithInterecptor(loggingInterceptor(logger))(in)
-	WithInterecptor(recoveryInterceptor(logger))(in)
-
-	for _, option := range options {
-		option(in)
-	}
-	return in
-}
 
 func WithInterecptor(userInterceptor grpc.UnaryServerInterceptor) InterceptorOption {
 	return func(in *interceptor) {
@@ -50,4 +46,25 @@ func (in *interceptor) Get() grpc.ServerOption {
 	return grpc.ChainUnaryInterceptor(
 		in.options...,
 	)
+}
+
+func WithSkipMethod(methods []string) InterceptorOption {
+	return func(in *interceptor) {
+		in.skipMethods = methods
+	}
+}
+
+func NewInterceptor(service string, logger log.Logger, options ...InterceptorOption) Interceptor {
+
+	in := &interceptor{}
+
+	//apply default interceptors
+	WithInterecptor(kitgrpc.Interceptor)(in)
+	WithInterecptor(loggingInterceptor(in, logger))(in)
+	WithInterecptor(recoveryInterceptor(in, logger))(in)
+
+	for _, option := range options {
+		option(in)
+	}
+	return in
 }
