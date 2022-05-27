@@ -28,7 +28,7 @@ export GOPRIVATE=gitlab.com/*
 
 Register interceptors when setting up gRPC server in application
 
-Using default interceptors
+### Using default interceptors
 
 ```
 //get Interceptor interface
@@ -38,7 +38,7 @@ interceptor := interceptors.NewInterceptor("spawnerservice", logger)
 baseServer := grpc.NewServer(interceptor.Get())
 ```
 
-Using user defined interceptors
+### Using user defined interceptors
 ```
 func InstrumentationInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
@@ -49,9 +49,25 @@ func InstrumentationInterceptor() grpc.UnaryServerInterceptor {
 
 //get Interceptor interface
 interceptor := interceptors.NewInterceptor(
-							"spawnerservice",
- 							logger,
-                  			interceptors.WithInterceptor(InstrumentationInterceptor()))
+				"spawnerservice",
+ 				logger,
+                  		interceptors.WithInterceptor(InstrumentationInterceptor()))
+
+//Calling Get will return ServerOptions, which is passed to NewServer
+baseServer := grpc.NewServer(interceptor.Get())
+```
+
+### skip sensitive methods from logging interceptor
+
+You can skip sensitive API request and response from request-response logging interceptor.
+```
+//get Interceptor interface
+var skipMethods = []string{"ReadCredential", "WriteCredential"}
+
+interceptor := interceptors.NewInterceptor(
+				"spawnerservice",
+ 				logger,
+				interceptors.WithSkipMethod(skipMethods))
 
 //Calling Get will return ServerOptions, which is passed to NewServer
 baseServer := grpc.NewServer(interceptor.Get())
@@ -70,8 +86,9 @@ Raise a issue, we will get back to you.
 
 ## License
 
+   GNU GENERAL PUBLIC LICENSE
 
 
 ## Project status
     
-    GNU GENERAL PUBLIC LICENSE
+    
