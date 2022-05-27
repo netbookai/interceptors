@@ -19,6 +19,7 @@ func loggingInterceptor(in *interceptor, logger log.Logger) grpc.UnaryServerInte
 		method := getMethod(info)
 
 		skip := in.skipLog(method)
+
 		args := []interface{}{method, "method", method}
 		if !skip {
 			args = append(args, []interface{}{"request", request})
@@ -28,10 +29,10 @@ func loggingInterceptor(in *interceptor, logger log.Logger) grpc.UnaryServerInte
 		resp, err := handler(ctx, req)
 
 		args = []interface{}{method, "method", method, "error", err, "took", time.Since(begin)}
-
 		if !skip {
-			args = append(args, []interface{}{"request", request, request, "response", resp})
+			args = append(args, []interface{}{"request", request, "response", resp})
 		}
+
 		logger.Info(ctx, args...)
 		return resp, err
 	}
