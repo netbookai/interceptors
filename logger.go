@@ -19,18 +19,19 @@ func loggingInterceptor(in *interceptor, logger log.Logger) grpc.UnaryServerInte
 		method := getMethod(info)
 
 		skip := in.skipLog(method)
+		msg := fmt.Sprintf("call to %s", method)
 
-		args := []interface{}{method, "method", method}
+		args := []interface{}{msg, "method", method}
 		if !skip {
-			args = append(args, []interface{}{"request", request})
+			args = append(args, "request", request)
 		}
 
-		logger.Debug(ctx, args...)
+		logger.Info(ctx, args...)
 		resp, err := handler(ctx, req)
 
-		args = []interface{}{method, "method", method, "error", err, "took", time.Since(begin)}
+		args = []interface{}{msg, "method", method, "error", err, "took", time.Since(begin)}
 		if !skip {
-			args = append(args, []interface{}{"request", request, "response", resp})
+			args = append(args, "request", request, "response", resp)
 		}
 
 		logger.Info(ctx, args...)
