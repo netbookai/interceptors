@@ -60,6 +60,7 @@ func NewInterceptor(service string, logger log.Logger, options ...InterceptorOpt
 
 	//apply default interceptors
 	WithInterecptor(kitgrpc.Interceptor)(in)
+	WithInterecptor(traceIdReader(in, logger))(in)
 	WithInterecptor(loggingInterceptor(in, logger))(in)
 	WithInterecptor(recoveryInterceptor(in, logger))(in)
 
